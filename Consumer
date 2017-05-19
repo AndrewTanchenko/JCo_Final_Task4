@@ -1,0 +1,33 @@
+import java.util.*;
+import java.util.concurrent.*;
+import java.util.Random;
+import static java.lang.Math.abs;
+
+public class Consumer implements Runnable {
+    private final BlockingQueue queue;
+
+    public Consumer(BlockingQueue queue) {
+        this.queue = queue;
+    }
+
+    @Override
+    public void run() {
+        System.out.println("[Consumer] run");
+        while (true) {
+            try {
+                consume();
+                Thread.currentThread().sleep(1500);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void consume() throws InterruptedException {
+        Integer i = queue.take();
+        if(i>0)
+            System.out.println("[Consumer] consumed: " + i);
+        else
+            System.out.println("[Consumer] consumed: " + abs(i) + " fail");
+    }
+}
