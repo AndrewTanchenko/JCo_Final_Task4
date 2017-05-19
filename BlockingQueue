@@ -1,0 +1,52 @@
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Random;
+
+public class BlockingQueue {
+
+    private List <Integer> queue = new LinkedList<Integer>();
+    private int  limit = 10;
+
+    public BlockingQueue(int limit){
+        this.limit = limit;
+    }
+
+
+    public synchronized void put(Integer item) throws InterruptedException {
+        while (this.queue.size() == this.limit) {
+            System.out.println("[BlockingQueue] <<< queue is full, waiting until space will be free");
+            wait();
+        }
+        if (this.queue.size() == 0) {
+            System.out.println("[BlockingQueue] <<< queue is empty, notify");
+            notifyAll();
+        }
+        System.out.println("[BlockingQueue] try to put: " + item );
+        this.queue.add(item);
+        System.out.println("[BlockingQueue] put ok: " + item );
+    }
+
+
+    public synchronized Integer take() throws InterruptedException {
+        while (this.queue.size() == 0) {
+            System.out.println("[BlockingQueue] >>> queue is empty, waiting until smth will be put");
+            wait();
+        }
+        if (this.queue.size() == this.limit){
+            System.out.println("[BlockingQueue] >>> queue is full, notify");
+            notifyAll();
+        }
+
+        Integer item = new Random().nextInt(10)+1;
+        System.out.println("[BlockingQueue] try to take: "+item);
+
+        if(this.queue.remove(item))
+            System.out.println("[BlockingQueue] take ok: " + item );
+        else {
+            System.out.println("[BlockingQueue] take fail: " + item + " not contained");
+            item = -item;
+        }
+
+        return item;
+    }
+}
